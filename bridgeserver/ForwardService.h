@@ -21,6 +21,8 @@ enum MEDIA_TYPE {
 };
 
 static const int AUDIO_RATIO_WEBRTC2XMPP = -3;
+
+
 /**
 一开始得到的地址都是客户端的本地地址，从收到的数据包中得到的是地址是客户端的出口地址。
 目前，暂时认为webrtc client中得到的地址本地和出口是相同的； 以后通过地址router探测来定位。
@@ -53,10 +55,11 @@ public:
 
 		char			buffer[MAX_UDP_PACKET_LEN];
 
-		time_t			lastPackageTime;	/**long time(for example: 10min) no package, will terminate it.*/
+		time_t			lastPackageTime;		/**long time(for example: 10min) no package, will terminate it.*/
 
-		VideoRtpFilter	videoFilter;
-		AudioRtpFilter	audioFilter;
+		VideoRtpFilter		videoFilter;
+		VideoResendService	xmppVideoResend;	/** xmpp客户端有丢包重发的请求处理 */
+		AudioRtpFilter		audioFilter;
 
 		bool isWebrtcAddr(const struct sockaddr_in& tempadd);
 

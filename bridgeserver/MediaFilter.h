@@ -100,3 +100,65 @@ public:
 		return true;
 	}
 };
+
+#define MAX_CACHE_RTP_PKT_COUNT 1024
+
+#include <functional>
+typedef std::function<int(const char* data, int dataLen)> UdpSendFunctor;
+class VideoResendService {
+public:
+	VideoResendService(): rtpPackages_(MAX_CACHE_RTP_PKT_COUNT) {}
+
+	void setUdpSendFunctor(const UdpSendFunctor& send) {
+		send_ = send;
+	}
+
+	void cacheData(const char* rtpData, int dataLen) {
+		assert(rtpData != NULL);
+		if (dataLen < 12) {
+			LOG_WARN("Invalid rtp package!");
+			return;
+		}
+
+		LOG_DEBUG("resend cachae data with seq: " << ntohs(*(uint16_t *)&(rtpData[2])));
+		rtpPackages_[ntohs(*(uint16_t *)&(rtpData[2])) % MAX_CACHE_RTP_PKT_COUNT].assign(rtpData, dataLen);
+	}
+	bool handle(const char* rtpData, int dataLen) {
+		if ((rtpData[0] & 0xff) != 0xfb) {			
+			return false;
+		}
+	
+		uint16_t startSeq = ntohs(*((uint16_t *)&(rtpData[1])));		
+		uint16_t endSeq = ntohs(*((uint16_t *)&(rtpData[3])));
+		if (startSeq > endSeq) {
+			LOG_WARN("Receive video resend invalid require with start seqNo: " << startSeq << ", end seqNo: " << endSeq);
+			return true;
+		}
+
+		LOG_INFO("Receive video resend require with start seqNo: " << startSeq << ", end seqNo: " << endSeq);
+				
+		assert(rtpPackages_.size() == MAX_CACHE_RTP_PKT_COUNT);
+
+		for (uint16_t seq = startSeq; seq <= endSeq; seq++)
+		{
+			std::string& packet = rtpPackages_[seq % MAX_CACHE_RTP_PKT_COUNT];
+			assert(packet.size() >= 12);
+
+			if (ntohs(*(uint16_t *)&(packet[2])) == seq)
+			{
+				LOG_DEBUG("resend video rtp packet seq: " << seq);
+				send_(packet.data(), packet.size());
+			}
+			else {
+				LOG_DEBUG("Rtp resend cache have not packet with seq: " << seq);
+			}
+		}
+
+		return true;
+	}
+private:
+	UdpSendFunctor				send_;
+	std::vector<std::string>	rtpPackages_;
+};
+
+

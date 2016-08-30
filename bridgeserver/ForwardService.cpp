@@ -62,6 +62,11 @@ void ForwardService::startForward(MEDIA_TYPE media, AddrPair& iceInfo, const soc
 	forward.xmppAddr.sin_family = AF_INET;
 	forward.xmppAddr.sin_port = htons(forward.iceInfo.remote_port);
 	forward.xmppAddr.sin_addr.s_addr = inet_addr(forward.iceInfo.remote_ip.c_str());
+
+	forward.xmppVideoResend.setUdpSendFunctor(std::bind(::sendto, local_fd, std::placeholders::_1, std::placeholders::_2, 0, (struct sockaddr*)&forward.xmppAddr, sizeof(struct sockaddr_in)));	
+//	forward.xmppVideoResend.setUdpSendFunctor([=](const char* data, int len){
+//		return sendto(local_fd, data, len, 0, (struct sockaddr*)&forward.xmppAddr, sizeof(struct sockaddr_in));
+//	});
 }
 
 /// 清理不使用的会话
@@ -133,9 +138,10 @@ void ForwardService::udpCallback(evutil_socket_t fd, short what, void *arg)
 
 		// forward received data
 		if (forward->isWebrtcAddr(tempadd)) {
-			if (forward->mediaType == MEDIA_VIDEO) {
+			if (forward->mediaType == MEDIA_VIDEO) {				
 				if (!forward->videoFilter.filter(forward->buffer, dataLen))
 					assert(false);// continue;
+				forward->xmppVideoResend.cacheData(forward->buffer, dataLen);
 			} 
 			else if (forward->mediaType == MEDIA_AUDIO) {
 				if (!forward->audioFilter.filter(forward->buffer, dataLen, AUDIO_RATIO_WEBRTC2XMPP))
@@ -147,7 +153,11 @@ void ForwardService::udpCallback(evutil_socket_t fd, short what, void *arg)
 			LOG_DEBUG("send data len: " << dataLen << "; from addr: " << toHexString((const char*)&tempadd, addrLen) << " to xmpp, port: " << ntohs(forward->xmppAddr.sin_port));
 		}
 		else {
-			if (forward->mediaType == MEDIA_AUDIO) {
+			if (forward->mediaType == MEDIA_VIDEO) {
+				// 如果是xmpp的重发请求，直接处理掉
+				if (forward->xmppVideoResend.handle(forward->buffer, dataLen))
+					continue;
+			} else if (forward->mediaType == MEDIA_AUDIO) {
 				if (!forward->audioFilter.filter(forward->buffer, dataLen, -AUDIO_RATIO_WEBRTC2XMPP))
 					continue;
 			}

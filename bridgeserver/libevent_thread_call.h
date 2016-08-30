@@ -13,7 +13,7 @@
 #include <mutex>
 #include <queue>
 
-typedef std::function<void()> Functor;    // 如果支持c++11，就是typedef stl::function<void()> Functor;  
+typedef std::function<void()> Functor;    // 需要支持c++11
 
 static const int FUNCTION_PTR_LEN = sizeof(Functor *);
 
