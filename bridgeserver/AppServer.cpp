@@ -18,7 +18,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "third/eice/src/eice.h"
+#include "eice.h"
 
 #include "applog.h"
 

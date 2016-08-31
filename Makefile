@@ -1,6 +1,6 @@
-PJDIR := ..
-include $(PJDIR)/build.mak
-include $(PJDIR)/version.mak
+PJ_DIR := ..
+include $(PJ_DIR)/build.mak
+include $(PJ_DIR)/version.mak
 include $(PJDIR)/build/common.mak
 
 export LIBDIR := ./lib
@@ -99,7 +99,7 @@ $(BRIDGESERVER_OBJS):%.o:%.cpp
 	$(CXX) -c -g -Ddebug $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS) $< -o $@
 $(BRIDGE_BIN_PATH): $(BRIDGESERVER_OBJS) ./bridgeserver/main.cc
 	mkdir -p $(BINDIR)
-	$(APP_CXX) $^ -std=c++11 -L$(LIBDIR) -pthread  -lpthread -llog4cplus -levent -lrt -leice_ -luuid -o $@
+	$(APP_CXX) $^ -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -llog4cplus -levent -lrt -leice_ -luuid -o $@
 
 
 TEST_OBJ := $(wildcard ./test/*.cpp)
@@ -107,12 +107,12 @@ $(TEST_OBJ):%.o:%.cpp
 	$(CXX) -c -g -Ddebug $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS)  $< -o $@
 $(TEST_BIN_PATH): $(TEST_OBJ) $(BRIDGESERVER_OBJS)
 	mkdir -p $(BINDIR)
-	$(APP_CXX)  $^ -g -Ddebug  -std=c++11 -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
+	$(APP_CXX)  $^ -g -Ddebug  -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
 
 
 $(CCS_BIN_PATH): $(CCS_OBJ) $(BRIDGESERVER_OBJS) ./test/mock_conference_control.cpp
 	mkdir -p $(BINDIR)
-	$(APP_CXX)  $^ -g -Ddebug -DMAIN  -std=c++11 -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
+	$(APP_CXX)  $^ -g -Ddebug -DMAIN  -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
 
 
 	

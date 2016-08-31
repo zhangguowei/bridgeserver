@@ -7,8 +7,8 @@
 
 #include "event2/event_struct.h" 
 
-#include "third/eice/src/json/json.h"
-#include "third/eice/src/eice.h"
+#include "json/json.h"
+#include "eice.h"
 #include "IceConnection.h"
 
 struct IceCommand;

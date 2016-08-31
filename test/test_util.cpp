@@ -42,7 +42,7 @@
 #include <cppunit/extensions/RepeatedTest.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "third/eice/src/json/json.h"
+#include "json/json.h"
 #include "test_common.h"
 #include "../bridgeserver/AppServer.h"
 #include "../bridgeserver/applog.h"

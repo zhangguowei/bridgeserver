@@ -5,7 +5,7 @@
 
 #include "applog.h"
 
-#include "third/eice/src/eice.h"
+#include "eice.h"
 
 #include "IceConnection.h"
 #include "TcpServer.h"
