@@ -1,4 +1,4 @@
-PJDIR := ../
+PJDIR := ..
 include $(PJDIR)/build.mak
 include $(PJDIR)/version.mak
 include $(PJDIR)/build/common.mak
