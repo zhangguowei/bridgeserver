@@ -1,6 +1,11 @@
-PJ_DIR := ..
-include $(PJ_DIR)/build.mak
-include $(PJ_DIR)/version.mak
+
+PJ_DIR_ := ..
+ifdef PJ_DIR	
+	PJ_DIR_ := $(PJ_DIR)
+endif
+
+include $(PJ_DIR_)/build.mak
+include $(PJ_DIR_)/version.mak
 include $(PJDIR)/build/common.mak
 
 export LIBDIR := ./lib
@@ -91,28 +96,33 @@ $(FULL_LIB_PATH): $(MERG_LIBS)
 	$(SILENT)echo "END" >> $(ARSCRIPT_PATH)
 	$(SILENT)$(AR) -M < $(ARSCRIPT_PATH)
 	$(RM) $(ARSCRIPT_PATH)
+	
 
-
-
-BRIDGESERVER_OBJS := $(wildcard ./bridgeserver/*.cpp)
+BRIDGESERVER_SRCS := $(wildcard ./bridgeserver/*.cpp)
+BRIDGESERVER_OBJS = $(foreach cpp, $(BRIDGESERVER_SRCS), $(addsuffix .o, $(basename $(cpp))))
 $(BRIDGESERVER_OBJS):%.o:%.cpp
-	$(CXX) -c -g -Ddebug $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS) $< -o $@
+	$(CXX) -c -g -Ddebug -std=c++11 $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS) $< -o $@
 $(BRIDGE_BIN_PATH): $(BRIDGESERVER_OBJS) ./bridgeserver/main.cc
 	mkdir -p $(BINDIR)
-	$(APP_CXX) $^ -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -llog4cplus -levent -lrt -leice_ -luuid -o $@
+	$(APP_CXX) $^ -std=c++11  -L$(LIBDIR) -pthread  -lpthread -llog4cplus -levent -lrt -leice_ -luuid -o $@
 
 
-TEST_OBJ := $(wildcard ./test/*.cpp)
-$(TEST_OBJ):%.o:%.cpp
-	$(CXX) -c -g -Ddebug $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS)  $< -o $@
-$(TEST_BIN_PATH): $(TEST_OBJ) $(BRIDGESERVER_OBJS)
+TEST_SRCS := $(wildcard ./test/*.cpp) 
+TEST_OBJS = $(foreach cpp, $(TEST_SRCS), $(addsuffix .o, $(basename $(cpp))))
+$(TEST_OBJS):%.o:%.cpp	
+	$(CXX) -c -g -Ddebug -std=c++11  $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS)  $< -o $@
+$(TEST_BIN_PATH): $(TEST_OBJS) $(BRIDGESERVER_OBJS)
 	mkdir -p $(BINDIR)
-	$(APP_CXX)  $^ -g -Ddebug  -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
+	$(APP_CXX)  $^ -g -Ddebug  -std=c++11  -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
 
 
-$(CCS_BIN_PATH): $(CCS_OBJ) $(BRIDGESERVER_OBJS) ./test/mock_conference_control.cpp
+
+CCS_OBJ = ./test/mock_conference_control_main.o
+$(CCS_OBJ):./test/mock_conference_control.cpp
+	$(CXX) -c -g -Ddebug -DMAIN -std=c++11  $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS)  $< -o $@
+$(CCS_BIN_PATH): $(CCS_OBJ) $(BRIDGESERVER_OBJS) 
 	mkdir -p $(BINDIR)
-	$(APP_CXX)  $^ -g -Ddebug -DMAIN  -std=c++11 $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
+	$(APP_CXX)  $^ -g -Ddebug -std=c++11  $(INCLUDE_DIRS) -L$(LIBDIR) -pthread  -lpthread -lcppunit -llog4cplus -levent -lrt -leice_  -luuid -o $@
 
 
 	
@@ -120,6 +130,9 @@ $(CCS_BIN_PATH): $(CCS_OBJ) $(BRIDGESERVER_OBJS) ./test/mock_conference_control.
 clean:		
 	$(RM) $(C_OBJ)
 	$(RM) $(CPP_OBJ)
+	$(RM) $(TEST_OBJS)
+	$(RM) $(CCS_OBJS)
+	$(RM) $(BRIDGESERVER_OBJS)
 	$(RM) $(BRIDGE_BIN_PATH)	
 	$(RM) $(TEST_BIN_PATH)
 

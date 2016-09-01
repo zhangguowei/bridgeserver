@@ -149,7 +149,7 @@ void ForwardService::udpCallback(evutil_socket_t fd, short what, void *arg)
 				//	continue;
 			}
 			
-			int sendLen = sendto(fd, forward->buffer, dataLen, 0, (struct sockaddr*)&forward->xmppAddr, addrLen);
+			sendto(fd, forward->buffer, dataLen, 0, (struct sockaddr*)&forward->xmppAddr, addrLen);
 			LOG_DEBUG("send data len: " << dataLen << "; from addr: " << toHexString((const char*)&tempadd, addrLen) << " to xmpp, port: " << ntohs(forward->xmppAddr.sin_port));
 		}
 		else {
@@ -162,7 +162,7 @@ void ForwardService::udpCallback(evutil_socket_t fd, short what, void *arg)
 					continue;
 			}
 
-			int sendLen = sendto(fd, forward->buffer, dataLen, 0, (struct sockaddr*)&forward->webrtcAddr, addrLen);
+			sendto(fd, forward->buffer, dataLen, 0, (struct sockaddr*)&forward->webrtcAddr, addrLen);
 			LOG_DEBUG("send data len: " << dataLen << "; from addr: " << toHexString((const char*)&tempadd, addrLen) << " to webtrc, port: " << ntohs(forward->webrtcAddr.sin_port));
 		}
 	}

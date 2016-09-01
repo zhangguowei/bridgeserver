@@ -38,7 +38,7 @@ public:
 	bool filter(char* data, int dataLen, int sample_ratio)
 	{
 		assert(data != NULL);
-		if (dataLen < sizeof(rtp_hdr)) {
+		if ((unsigned)dataLen < sizeof(rtp_hdr)) {
 			LOG_WARN("error rtp package.");
 			return true;
 		}
@@ -84,11 +84,10 @@ public:
 	*/
 	bool filter(char* data, int dataLen) {
 		assert(data != NULL);
-		if (dataLen < sizeof(rtp_hdr) + 2)
+		if ((unsigned)dataLen < sizeof(rtp_hdr) + 2)
 			return true;
 
-		rtp_hdr* curRtpHeader = (rtp_hdr*)&data;
-
+		//rtp_hdr* curRtpHeader = (rtp_hdr*)&data;
 		int nal_type = data[sizeof(rtp_hdr)] & 0x1F;
 		if (nal_type > 0 && nal_type < 24) {
 			//if (nal_type == 5 || nal_type == 1 || nal_type == 7 || nal_type == 9)

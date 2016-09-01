@@ -91,7 +91,7 @@ public:
 			usleep(300000);
 
 			int sendLen = sendto(fd, buffer, dataLen, 0, (struct sockaddr*)&tempadd, addrLen);			
-			LOG_DEBUG("send it back");
+			LOG_DEBUG("send it back: " << sendLen);
 		}		
 	}
 		
@@ -183,24 +183,24 @@ public:
 		/// now modify timestamp
 		char data[13] = "123456789012";
 		
-		rtp_hdr& rtpHeader = *(rtp_hdr*)&data;
-		rtpHeader.ts = 0x123456;
-		rtpHeader.setTimeStamp(rtpHeader.timeStamp() * 3);
+		rtp_hdr* rtpHeader = (rtp_hdr*)&data;
+		rtpHeader->ts = 0x123456;
+		rtpHeader->setTimeStamp(rtpHeader->timeStamp() * 3);
 		//CPPUNIT_ASSERT(rtpHeader.ts == 0x123456 * 3);
 		
-		rtpHeader.setTimeStamp(101);
-		CPPUNIT_ASSERT(rtpHeader.timeStamp() == 101);
+		rtpHeader->setTimeStamp(101);
+		CPPUNIT_ASSERT(rtpHeader->timeStamp() == 101);
 
-		uint32_t& st = *(uint32_t*)&data[4];
-		st = 0x123412;
+		uint32_t* st = (uint32_t*)&data[4];
+		*st = 0x123412;
 		AudioRtpFilter af;
 		af.filter(data, 12, 3);
-		LOG_DEBUG("after ratio 3, st is " << st);
-		CPPUNIT_ASSERT(st == 0x123412 * 3);
+		LOG_DEBUG("after ratio 3, st is " << *st);
+		CPPUNIT_ASSERT(*st == 0x123412 * 3);
 
-		st = 0x123456;
+		*st = 0x123456;
 		af.filter(data, 12, -3);
-		LOG_DEBUG("after ratio -3, st is " << st);
+		LOG_DEBUG("after ratio -3, st is " << *st);
 		//CPPUNIT_ASSERT(st == 0x123456 / 3);
 	}
 

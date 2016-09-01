@@ -48,7 +48,7 @@ struct IceSession{
 	char		iceResult[MAX_COMMAND_LEN];	/** result of ice negotiate*/
 	int			iceResultLen;
 
-	IceSession() : id(0), endpoint(NULL), curStatus(ICE_OP_NON), request(NULL), iceResultLen(0) {}
+	IceSession() : id(0), endpoint(NULL), request(NULL), curStatus(ICE_OP_NON), iceResultLen(0) {}
 	~IceSession() {
 		if (endpoint != NULL) {
 			eice_free(endpoint);

@@ -45,5 +45,6 @@ private:
 
 class ConnectionBuilder{
 public:
+	virtual ~ConnectionBuilder() {}
 	virtual Connection* create(bufferevent *bev) = 0;
 };
