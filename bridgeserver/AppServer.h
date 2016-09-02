@@ -47,7 +47,7 @@ public:
 private:
 	static void ev_signal_cb(evutil_socket_t sig, short events, void *user_data);
 private:
-	struct event_base *						eventBase_;	
+	struct event_base *						eventBase_;				/** libevent for main thread to handle business.*/
 	std::unique_ptr<TcpServer>				iceServer_;				
 	std::unique_ptr<IceService>				iceService_;			/** provide ice nat penetrate service */
 	std::unique_ptr<ForwardService>			mediaForwardService_;	/** forward media between webrtc user and xmpp user.*/

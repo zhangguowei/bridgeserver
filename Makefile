@@ -101,7 +101,7 @@ $(FULL_LIB_PATH): $(MERG_LIBS)
 BRIDGESERVER_SRCS := $(wildcard ./bridgeserver/*.cpp)
 BRIDGESERVER_OBJS = $(foreach cpp, $(BRIDGESERVER_SRCS), $(addsuffix .o, $(basename $(cpp))))
 $(BRIDGESERVER_OBJS):%.o:%.cpp
-	$(CXX) -c -g -Ddebug -std=c++11 $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS) $< -o $@
+	$(CXX) -c -g -Ddebug -std=c++11  $(_CXXFLAGS) $(APP_CFLAGS) $(INCLUDE_DIRS) $< -o $@
 $(BRIDGE_BIN_PATH): $(BRIDGESERVER_OBJS) ./bridgeserver/main.cc
 	mkdir -p $(BINDIR)
 	$(APP_CXX) $^ -std=c++11  -L$(LIBDIR) -pthread  -lpthread -llog4cplus -levent -lrt -leice_ -luuid -o $@

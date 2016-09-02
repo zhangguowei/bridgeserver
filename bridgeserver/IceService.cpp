@@ -16,7 +16,7 @@
 
 bool checkStatus(ICE_OP cur_status, ICE_OP new_status)
 {
-	bool ret;
+	bool ret = true;
 	switch (new_status)
 	{
 	case ICE_OP_NON:
@@ -68,8 +68,7 @@ void get_addr_pairs_from_result(eice_t obj, const char * caller_result, std::vec
 		Json_em::Value pairs_value = caller_value["pairs"];
 		Json_em::Value relay_pairs_value = caller_value["relay_pairs"];
 		if (!pairs_value.isNull()){
-			for (int i = 0; i < pairs_value.size(); i++) {
-
+			for (unsigned i = 0; i < pairs_value.size(); i++) {
 				int port = pairs_value[i]["local"]["port"].asInt();
 				int fd = eice_get_global_socket(obj, port);
 				if (fd < 0) {
@@ -83,7 +82,7 @@ void get_addr_pairs_from_result(eice_t obj, const char * caller_result, std::vec
 					, pairs_value[i]["remote"]["port"].asInt()
 					, fd));				
 
-				AddrPair &ap = addr_pairs.back();
+				AddrPair& ap = addr_pairs.back();
 				LOG_DEBUG("store No." << addr_pairs.size()-1 << " pair fd=" << ap.local_fd << ", local_port=" << ap.local_port << ", remote_port=" << ap.remote_port);								
 			}			
 		}
@@ -320,8 +319,8 @@ void IceService::handleIceCommand(const IceCommand &command, Connection* sender)
 
 				// for forward audio/video
 				// ÎªÁË²âÊÔ£¬Ð´ËÀremoteµØÖ·
-				//addr_pairs[0].remote_ip = "172.17.2.51";			
-				//addr_pairs[0].remote_port = 10000;
+				addr_pairs[0].remote_ip = "172.17.2.51";			
+				addr_pairs[0].remote_port = 10000;
 				g_app.forwardService()->startForward(MEDIA_AUDIO, addr_pairs[0], webrtcAddr);
 			}
 			else {
@@ -335,8 +334,8 @@ void IceService::handleIceCommand(const IceCommand &command, Connection* sender)
 				webrtcAddr.sin_port = htons(addrInfo["video"]["port"].asUInt());
 				webrtcAddr.sin_addr.s_addr = inet_addr(addrInfo["video"]["ip"].asString().data());
 
-				//addr_pairs[2].remote_ip = "172.17.2.51";				
-				//addr_pairs[2].remote_port = 10002;
+				addr_pairs[2].remote_ip = "172.17.2.51";				
+				addr_pairs[2].remote_port = 10002;
 				g_app.forwardService()->startForward(MEDIA_VIDEO, addr_pairs[2], webrtcAddr);
 			}
 		}
