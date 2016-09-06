@@ -241,7 +241,7 @@ class WebrtcConnection : public Connection
 {
 public:
 	WebrtcConnection(struct bufferevent *bev) : Connection(bev) {}
-	virtual void handleCommand(const char *data, int len)
+	virtual void handleCommand(const char *data, unsigned int len)
 	{
 		LOG_DEBUG("receive " << data << "; len " << len);
 		//if (strcmp(data, ) == 0) {

@@ -36,26 +36,26 @@ void IceConnection::handleIceCommand(const IceCommand &command)
 	g_app.iceService()->handleIceCommand(command, this);
 }
 
-void IceConnection::handleCommand(const char *pDataBuffer, int dataLen)
+void IceConnection::handleCommand(const char *pDataBuffer, unsigned int dataLen)
 {
 	assert(pDataBuffer != NULL && dataLen > 0);
 
 	LOG_DEBUG("Received data " << dataLen << "; current buffer " << recvBuffer_.size());	
-	LOG_DEBUG("Received data: " << toHexString(pDataBuffer, std::min(16, dataLen + ICE_COMMAND_HEADER_LEN), " "));
+	LOG_DEBUG("Received data: " << toHexString(pDataBuffer, std::min((unsigned)16, dataLen + ICE_COMMAND_HEADER_LEN), " "));
 
 	unsigned totalUsedLen = 0;
 	unsigned usedLen = 0;
 	recvBuffer_.append(pDataBuffer, dataLen);
-	IceCommand response;
+	IceCommand command;
 	while ((dataLen > totalUsedLen))
 	{
-		if (!parseCommand(response, recvBuffer_.data() + totalUsedLen, recvBuffer_.size() - totalUsedLen, usedLen))
+		if (!parseCommand(command, recvBuffer_.data() + totalUsedLen, recvBuffer_.size() - totalUsedLen, usedLen))
 		{
 			break;
 		}		
 		totalUsedLen += usedLen;
 
-		handleIceCommand(response);
+		handleIceCommand(command);
 	}
 	assert(totalUsedLen <= recvBuffer_.size());
 
@@ -72,7 +72,7 @@ void IceConnection::handleCommand(const char *pDataBuffer, int dataLen)
 	LOG_DEBUG("current buffer len " << recvBuffer_.size());
 }
 
-bool IceConnection::parseCommand(IceCommand &response, const char *pDataBuffer, unsigned nLength, unsigned & usedLen)
+bool IceConnection::parseCommand(IceCommand &command, const char *pDataBuffer, unsigned nLength, unsigned & usedLen)
 {
 	assert(pDataBuffer != NULL && nLength > 0);
 	
@@ -88,9 +88,9 @@ bool IceConnection::parseCommand(IceCommand &response, const char *pDataBuffer, 
 	}
 
 	usedLen = ICE_COMMAND_HEADER_LEN + contentLen;
-	response.op = *(uint32_t*)pDataBuffer;
-	response.sessionId = *(SessionID*)(pDataBuffer+4);
-	response.content.assign(pDataBuffer+ICE_COMMAND_HEADER_LEN, contentLen);
+	command.op = *(uint32_t*)pDataBuffer;
+	command.sessionId = *(SessionID*)(pDataBuffer+4);
+	command.content.assign(pDataBuffer+ICE_COMMAND_HEADER_LEN, contentLen);
 
 	return true;	
 }

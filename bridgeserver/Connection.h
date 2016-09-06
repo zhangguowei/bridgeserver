@@ -18,7 +18,7 @@ public:
 	Connection(struct bufferevent *bev);
 	virtual ~Connection();
 
-	virtual void handleCommand(const char *pDataBuffer, int nLength) = 0;
+	virtual void handleCommand(const char *pDataBuffer, unsigned int nLength) = 0;
 
 	/**
 	@desc send data to this connection.

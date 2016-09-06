@@ -35,7 +35,7 @@ struct IceCommand
 	SessionID		sessionId;
 	std::string		content;
 };
-static const uint16_t ICE_COMMAND_HEADER_LEN = 16;	/**op 4 bytes + sessionId 8 bytes + content length 4 bytes.*/
+static const unsigned ICE_COMMAND_HEADER_LEN = 16;	/**op 4 bytes + sessionId 8 bytes + content length 4 bytes.*/
 
 class IceConnectionBuilder :public ConnectionBuilder {
 	virtual Connection* create(bufferevent *bev);
@@ -45,7 +45,7 @@ class IceConnection : public Connection
 {		
 public:
 	IceConnection(struct bufferevent *bev) : Connection(bev) {}
-	virtual void handleCommand(const char *pDataBuffer, int nLength);
+	virtual void handleCommand(const char *pDataBuffer, unsigned int nLength);
 	
 protected:
 	virtual void handleIceCommand(const IceCommand &command);
