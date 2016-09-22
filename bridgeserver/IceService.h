@@ -96,7 +96,9 @@ private:
 
 	std::string		iceJsonConfig_;					/**include ice server info*/
 	Json_em::Value	configInfo_;
-		
+
+	std::string		testIP_;						/** 为测试方便，运行在配置文件中指定测试地址，注意：在实际工作中一定要去掉这个配置！ */
+
 	char			sendBuffer_[MAX_COMMAND_LEN];	/** command buffer for send data to service requester*/
 };
 

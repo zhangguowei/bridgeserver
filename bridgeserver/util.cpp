@@ -27,7 +27,14 @@ std::string toHexString(const char* buf, int len, const std::string& tok)
 	return output;
 }
 
-/// create a timer		
+/** @desc create a timer		
+*@param[out] timer		timer event object for this timer
+*@param[in] eventBase	event base object which this timer is run in.
+*@param[in] time (s)	time for this timer
+*@param[in] cb			callback for this timer
+*@param[in] arg			argument for cb
+*@return true: success to create a timer.
+*/
 bool startTimer(struct event& timer, event_base* eventBase, int time, Timout_cb cb, void *arg)
 {
 	struct timeval tv;

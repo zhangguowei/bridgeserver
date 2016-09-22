@@ -4,10 +4,8 @@
 // interface:
 // 1. prepareSession(SessionID, localInfo)
 // 2. startSession(SessionID, peerInfo)
-
 // 3. joinSession(SessionID, peerInfo)
-
-// 4. relaySession(SessionID, peerInfo)	
+// 4. relaySession(SessionID, webrtcAnswer)	
 
 
 // data:  relay data between kurento and mobile

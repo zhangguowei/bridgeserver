@@ -24,8 +24,8 @@ static const int AUDIO_RATIO_WEBRTC2XMPP = -3;
 
 
 /**
-一开始得到的地址都是客户端的本地地址，从收到的数据包中得到的是地址是客户端的出口地址。
-目前，暂时认为webrtc client中得到的地址本地和出口是相同的； 以后通过地址router探测来定位。
+从收到的数据包中得到的是地址是socket的出口地址。
+目前，认为webrtc answer中得到的地址和其出口是相同的； 
 */
 class ForwardService {
 	friend class TestForward;

@@ -142,6 +142,15 @@ void ForwardService::udpCallback(evutil_socket_t fd, short what, void *arg)
 				if (!forward->videoFilter.filter(forward->buffer, dataLen))
 					assert(false);// continue;
 				forward->xmppVideoResend.cacheData(forward->buffer, dataLen);
+
+				// 模拟丢包，看看情况； 丢5%
+				/*
+				struct timeval tpstart;
+				gettimeofday(&tpstart, NULL);
+				srand(tpstart.tv_usec);
+				if (rand() % 20 == 0)
+					continue;
+					*/
 			} 
 			else if (forward->mediaType == MEDIA_AUDIO) {
 				if (!forward->audioFilter.filter(forward->buffer, dataLen, AUDIO_RATIO_WEBRTC2XMPP))

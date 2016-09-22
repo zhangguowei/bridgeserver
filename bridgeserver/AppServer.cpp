@@ -69,7 +69,6 @@ AppServer::AppServer()
 	iniFile_.reset(new IniFile("config.ini"));
 
 	eice_init();
-
 	eice_set_log_func(log_eice);
 }
 

@@ -25,8 +25,9 @@ std::string enumKey(ICE_OP value);
 
 typedef uint64_t SessionID;
 
-// 2字节信令编码
-// 2字节内容长度
+// 4字节信令编码
+// 8字节会话ID
+// 4字节内容长度
 // 后面就是内容了(json格式)
 struct IceCommand
 {
@@ -34,7 +35,7 @@ struct IceCommand
 	SessionID		sessionId;
 	std::string		content;
 };
-static const uint16_t ICE_COMMAND_HEADER_LEN = 16;	/**op 4 bytes + sessionId 8 bytes + content length 4 bytes.*/
+static const unsigned ICE_COMMAND_HEADER_LEN = 16;	/**op 4 bytes + sessionId 8 bytes + content length 4 bytes.*/
 
 class IceConnectionBuilder :public ConnectionBuilder {
 	virtual Connection* create(bufferevent *bev);
@@ -44,12 +45,20 @@ class IceConnection : public Connection
 {		
 public:
 	IceConnection(struct bufferevent *bev) : Connection(bev) {}
-	virtual void handleCommand(const char *pDataBuffer, int nLength);
+	virtual void handleCommand(const char *pDataBuffer, unsigned int nLength);
 	
 protected:
 	virtual void handleIceCommand(const IceCommand &command);
 
 private:	
+	/**
+	*@desc parse data, generate command
+	*@param[out]	res:	generated command
+	*@param[in]		data:	input command data
+	*@param[in]		length:	input command data length
+	*@param[in]		usedLen:used data len for generate command
+	*@return		true:	success to generate a command.
+	*/
 	bool parseCommand(IceCommand &res, const char *data, unsigned length, unsigned & usedLen);
 				
 private:
